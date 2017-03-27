@@ -1,6 +1,6 @@
 import math
 
-def areaOfIntersection(x0, y0, r0, x1, y1, r1):
+def AreaOfIntersection(x0, y0, r0, x1, y1, r1):
     rr0 = r0 * r0
     rr1 = r1 * r1
     d = math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0))
@@ -49,7 +49,6 @@ def ComparisonOfAreas(a1, a2, c1, c2):
     elif a2 - a1 >= 0.2 * a2:
         return c2
     else: 
-        # print("areas are the same")
         return None
         
 def FindDistance(c1, c2):
@@ -69,26 +68,26 @@ def Absorption(area1, area2, big):
     circle.append(new_radius)
     return circle
 
-def checkio(data):
-    
+def AnalysisOfBlackHoles(data):
+        
     data = list(data) # mutable list of input
     result = list(data) # result as a list
     eaten = list() # absorbed black holes 
     small = list() # list of distances between black holes
+    changes = 0 # marker for any changes in an input list
+    counter = len(data) # descending counter of elements in an input list
+
+    # list of distances
     
     for i in range(len(data)):
         for j in range(i + 1, len(data)):
             d = FindDistance(data[i], data[j])
             small.append(d)
             
-    print(small)
-    for i in small:
-        if len(small) > 1:
-            print(min(small))
-            small[small.index(min(small))] = max(small)
-            print(small)
-    
+    # iteration through list of black holes
+
     for i in range(len(data)):
+        counter -= 1
         for j in range(i + 1, len(data)):
             if data[i] in eaten or data[j] in eaten:
                 continue
@@ -100,31 +99,34 @@ def checkio(data):
             area1 = float("{0:.2f}".format(c1[2]**2 * math.pi))
             area2 = float("{0:.2f}".format(c2[2]**2 * math.pi))
             d = FindDistance(c1, c2)
-            
+            if d != min(small):
+                continue
+
             # calculate an area of intersection
-            
-            area = areaOfIntersection(c1[0], c1[1], c1[2], c2[0], c2[1], c2[2])
+
+            area = AreaOfIntersection(c1[0], c1[1], c1[2], c2[0], c2[1], c2[2])
             area = float("{0:.2f}".format(area))
             if area == 0:
-                # print("No intersection", data[i], data[j])
                 continue
-            
+
             # compare area of intersection to areas of two black holes
             
             compare = IntersectionIsBigEnough(area1, area2, area)
             if compare is False:
+                small[small.index(min(small))] = 999
                 continue
-            
+
             # compare areas of two circles
             
             big = ComparisonOfAreas(area1, area2, c1, c2)
-            # print(big, compare, c1, c2)
             if big is None:
+                small[small.index(min(small))] = 999
                 continue
-            
+
             # absorption 
             
             pre = Absorption(area1, area2, big)
+            changes += 1
             
             if isinstance(data[0], list) is False:
                 pre = tuple(pre)        
@@ -140,8 +142,18 @@ def checkio(data):
                 eaten.append(data[j])
             elif big == data[j]:
                 data[j] = pre
-                eaten.append(data[j])
+                eaten.append(data[i])
+        
+        if counter == 0:
+            if changes != 0:
+                result = AnalysisOfBlackHoles(result)
+                return result
+            else:
+                return result
     
+def checkio(data):
+    
+    result = AnalysisOfBlackHoles(data)
     print("result: ", result)
     return result
 
@@ -152,4 +164,5 @@ if __name__ == '__main__':
     assert checkio([(4, 3, 2), (2.5, 3.5, 1.4)]) == [(4, 3, 2.44)]
     assert checkio([(3, 3, 3), (2, 2, 1), (3, 5, 1.5)]) == [(3, 3, 3.5)]
     assert checkio([[3,3,3],[2,2,1],[6,3,2]]) == [[3,3,3.16],[6,3,2]]
+    assert checkio([[0,0,1],[1,0,1],[1.5,0,0.5]]) == [[0,0,1],[1,0,1.12]]
     assert checkio([[0.8,0,1],[1,0,1],[1.5,0,0.5]]) == [[1,0,1.5]]
