@@ -115,14 +115,14 @@ def AnalysisOfBlackHoles(data):
             
             compare = IntersectionIsBigEnough(area1, area2, area)
             if compare is False:
-                small[small.index(min(small))] = 999
+                small.remove(min(small))
                 continue
 
             # compare areas of two circles
             
             big = ComparisonOfAreas(area1, area2, c1, c2)
             if big is None:
-                small[small.index(min(small))] = 999
+                small.remove(min(small))
                 continue
 
             # absorption 
