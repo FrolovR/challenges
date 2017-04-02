@@ -1,3 +1,5 @@
+# solution by Roman Frolov
+
 class Building:
     def __init__(self, south, west, width_WE, width_NS, height=10):
         self.name = "Building"
