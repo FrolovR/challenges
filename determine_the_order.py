@@ -44,7 +44,9 @@ def checkio(data):
             
         common = FindCommon(order, suborder)
         
+        # only one common character
         if len(common) == 1:
+            # when common char in the start of the string
             if string.index(common[0]) == 0:
                 for char in string:
                     if char == common[0]:
@@ -52,6 +54,7 @@ def checkio(data):
                     else:
                         after.append(char)
                 order = InsertAfter(common[0], after, order)
+            # when common char in the end of the string
             elif string.index(common[0]) == len(string) - 1:
                 for char in string:
                     if char == common[0]:
@@ -59,17 +62,44 @@ def checkio(data):
                     else:
                         before.append(char)
                 order = InsertBefore(common[0], before, order)
+        # case with 2 common characters
         elif len(common) == 2:
-            temp = list()
             for char in string:
                 if char in common:
                     continue
-                else:
-                    temp.append(char)
-            order = InsertBetween(common[0], common[1], temp, order)
+                elif string.index(char) < string.index(common[0]):
+                    before.append(char)
+                elif string.index(char) > string.index(common[0]) and string.index(char) < string.index(common[1]):
+                    between.append(char)
+                elif string.index(char) > string.index(common[1]):
+                    after.append(char)
+            order = InsertBefore(common[0], before, order)
+            order = InsertBetween(common[0], common[1], between, order)
+            order = InsertAfter(common[1], after, order)
+        # case with more than 2 common characters
+        elif len(common) > 2:
+            temp = list()
+            string = ''.join(sorted(set(string), key=string.index))
+            for char in string:
+                if char in common:
+                    continue
+                elif string.index(char) < string.index(common[0]):
+                    before.append(char)
+                elif string.index(char) > string.index(common[0]) and string.index(char) < string.index(common[-1]):
+                    for i in range(len(common) - 1):
+                        if string.index(char) > string.index(common[i]) and string.index(char) < string.index(common[i+1]):
+                            temp.append(char)
+                            if string.index(common[i+1]) == string.index(char) + 1:
+                                order = InsertBetween(common[i], common[i+1], temp, order)
+                                temp = list()
+                elif string.index(char) > string.index(common[-1]):
+                    after.append(char)
+        # no common characters, use classic alphabetical order
+        # need to improve
         elif len(common) == 0:
             order.append(string)
                 
+        print(order)
     # stringify result list
     string = ""
     for char in order:
@@ -90,3 +120,4 @@ if __name__ == '__main__':
     assert checkio(["dfg", "frt", "tyg"]) == "dfrtyg", \
         "Concatenate and paste in"
     assert checkio(["hello","low","lino","itttnosw"]) == "helitnosw"
+    assert checkio(["my","name","myke"]) == "namyke"
