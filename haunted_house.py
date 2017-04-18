@@ -1,3 +1,4 @@
+# don't get me wrong, this is not the final solution; probability of win in both asserts is high, but not a 100% win rate
 from random import choice
 
 def StephanMoves(stephan, house):
